@@ -4,7 +4,7 @@
     "homepage": "https://lame.buanzo.org/",
     "license": "LGPL-2.1-only",
     "depends": "audacity",
-    "url": "https://lame.buanzo.org/FFmpeg\_5.0.0\_for_Audacity_on_Windows_x86_64.exe",
+    "url": "https://lame.buanzo.org/FFmpeg_5.0.0_for_Audacity_on_Windows_x86_64.exe",
     "hash": "a60a9f9466b967d5bef8f9b242b928f98516f756c7c5ea06660b37c6cdbc6bfc",
     "checkver": {
         "url": "https://lame.buanzo.org/",
