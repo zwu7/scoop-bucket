@@ -1,15 +1,12 @@
 {
-    "version": "1.66",
+    "version": "1.64.527952",
     "description": "Logi Options+. Enhance your experience. Logi Options+ is the powerful, easy-to-use, next-gen application that enables customization for Logitech mice and keyboards so you can work how you want.",
     "homepage": "https://www.logitech.com/en-au/software/logi-options-plus.html",
     "license": "Proprietary",
-    "changelog": "https://support.logi.com/hc/en-us/articles/1500005516462",
     "url": "https://download01.logi.com/web/ftp/pub/techsupport/optionsplus/logioptionsplus_installer.exe#/setup.exe",
-    "hash": "cb4a77594158ca821def348b1640f63dbb080fa99634f007b16751111505cebd",
-    "pre_download": "Assert-Administrator",
+    "hash": "2a0d98de5e8e8cd7443a9af1abbd72bbf32332df53b69f313ec04e3dc9c45300",
     "pre_install": [
-        "$processname = \"logioptionsplus\"",
-        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
         "if ($process) {",
         "   $process.CloseMainWindow()",
         "   Start-Sleep -Seconds 5",
@@ -21,28 +18,31 @@
     ],
     "installer": {
         "script": [
-            "$programname = \"Logi Options+*\"",
-            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
-            "$filepath = \"$ProgramFiles\\LogiOptionsPlus\\logioptionsplus.exe\"",
-            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
-            "{",
-            "   &\"$dir\\setup.exe\" /quiet | Out-Null",
-            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
-            "   {",
-            "       exit 1",
-            "   }",
-            "}",
-            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
-        ]
+            "Start-Process \"$dir\\setup.exe\" -ArgumentList @('/quiet', '/analytics No', '/flow Yes', '/sso Yes', '/update No') -Wait -NoNewWindow"
+        ],
+        "keep": true
     },
-    "post_install": [
-        "$programname = \"programname\"",
-        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
-        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "$processName = \"LogiOptions\"",
+        "$process = Get-Process $processName -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
     ],
+    "uninstaller": {
+        "script": [
+            "Start-Process \"C:\\Program Files\\LogiOptionsPlus\\logioptionsplus_updater.exe\" -ArgumentList @('--uninstall', '--full', '--shadow') -Wait -Verb 'RunAs'"
+        ],
+    },
     "checkver": {
-        "url": "https://support.logi.com/hc/en-us/articles/1500005516462",
-        "regex": "><strong>Version ([\\d]+.[\\d]+)"
+        "url": "https://support.logi.com/hc/en-us/articles/1500005516462-Logi-Options-Release-Notes",
+        "regex": "Version ([\\d.]+)"
     },
     "autoupdate": {
         "url": "https://download01.logi.com/web/ftp/pub/techsupport/optionsplus/logioptionsplus_installer.exe#/setup.exe"
